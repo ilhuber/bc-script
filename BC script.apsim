@@ -1,18 +1,29 @@
 <folder version="36" creator="Apsim 7.7-r3632" name="simulations">
   <manager2 name="biochar">
     <ui>
-      <date_of_application type="text" description="Date of biochar application (mm/dd/yyyy)">04/15/2007</date_of_application>
-      <biochar_added type="float" description="amount of biochar applied (kg/ha)">12000</biochar_added>
-      <frac_c_biochar type="float" description="fraction carbon in biochar (0-1)">0.74</frac_c_biochar>
+      <category5 type="category" description="Management" />
+      <date_of_application type="text" description="Date of biochar application (mm/dd/yyyy)">03/01/1986</date_of_application>
+      <biochar_added type="float" description="amount of biochar applied (kg/ha)">80000</biochar_added>
+      <incorp_depth type="text" description="Biochar incorporation depth (mm): ">100</incorp_depth>
+      <category6 type="category" description="Biochar properties" />
+      <frac_c_biochar type="float" description="fraction carbon in biochar (0-1)">0.7</frac_c_biochar>
       <biochar_loss type="float" description="fraction of biochar lost during application (0-1)">0.02</biochar_loss>
-      <MRT1 type="float" description="mean residence time for labile biochar pool (years)">3</MRT1>
-      <MRT2 type="float" description="mean residence time  for resistant biochar pool (years)">200</MRT2>
-      <frac_labile type="float" description="biochar labile fraction (0-1)">0.26</frac_labile>
+      <MRT1 type="float" description="mean residence time for labile biochar pool (years)">1</MRT1>
+      <MRT2 type="float" description="mean residence time  for resistant biochar pool (years)">100</MRT2>
+      <frac_labile type="float" description="biochar labile fraction (0-1)">0.2</frac_labile>
       <ef_biochar type="float" description="fraction of decomposed biochar that goes to OC pools (0-1) (biochar efficiency)">0.4</ef_biochar>
       <fr_biochar_biom type="int" description="fraction of decomposed biochar that goes to biom (0-1)">0.05</fr_biochar_biom>
-      <biochar_cn type="int" description="biochar CN ratio">96</biochar_cn>
-      <sand type="float" description="sand (0-1)">0.42</sand>
-      <clay type="float" description="clay (0-1) ">0.27</clay>
+      <biochar_cn type="int" description="biochar CN ratio">100</biochar_cn>
+      <dul_qual type="text" description="Slope of dul quality equation (default 0.33)">0.3</dul_qual>
+      <bd_qual type="text" description="Slope of bd quality equation (default 0.33)">0.15</bd_qual>
+      <bc_cce type="text" description="Biochar LV (cmol/kg?)">50</bc_cce>
+      <bc_cec type="text" description="Biochar ECEC (cmol/kg)">187</bc_cec>
+      <cnrf_bc_coeff type="text" description="Biochar cnrf coefficient (0-1)">0.69</cnrf_bc_coeff>
+      <cnrf_bc_optcn type="text" description="Optimum cn ratio for bc">25</cnrf_bc_optcn>
+      <bc_wfps_factor type="text" description="Biochar WFPS factor (0-1)">1</bc_wfps_factor>
+      <nh4_adsorption type="text" description="Biochar nh4 absorption coefficient (Langmuir)">0.006</nh4_adsorption>
+      <nh4_desorption type="text" description="Biochar nh4 desorption coefficient (Langmuir)">0.06</nh4_desorption>
+      <Categorypriming type="category" description="Priming coefficients" />
       <prim_biom type="float" description="priming coefficient for biom pool (-1 to 1) use 0.05">0</prim_biom>
       <prim_hum type="float" description="priming coefficient for hum pool (-1 to 1) use 0.05">0</prim_hum>
       <prim_cell type="float" description="priming coefficient for cell pool (-1 to 1) use 0.08">0</prim_cell>
@@ -22,22 +33,13 @@
       <prim_fr type="float" description="negative priming coefficient for internal C partioning (use -0.1), biom">0</prim_fr>
       <prim_ef_fom type="text" description="negative priming for internal C partitioning (use 0.1 for 20 mg),fom">0</prim_ef_fom>
       <prim_fr_fom type="text" description="negative priming for internal C partitioning (use -0.1 for 20 mg), fom">0</prim_fr_fom>
+      <category2 type="category" description="Tillage info" />
+      <tillage type="text" description="% BD reduction due to tillage">0.8</tillage>
+      <category3 type="category" description="Soil information" />
+      <sand type="float" description="sand (0-1)">0.41</sand>
+      <clay type="float" description="clay (0-1) ">0.21</clay>
       <biom_cn type="text" description="C/N ratio of biom pool:">8</biom_cn>
       <soil_cn type="text" description="C/N ratio of soil stuff:">12</soil_cn>
-      <incorp_depth type="text" description="Biochar incorporation depth (mm): ">130</incorp_depth>
-      <dul_qual type="text" description="Slope of dul quality equation (default 0.33)">0.3</dul_qual>
-      <bd_qual type="text" description="Slope of bd quality equation (default 0.33)">0.15</bd_qual>
-      <bc_cce type="text" description="Biochar LV (cmol/kg?)">50</bc_cce>
-      <bc_cec type="text" description="Biochar ECEC (cmol/kg)">187</bc_cec>
-      <cnrf_bc_coeff type="text" description="Biochar cnrf coefficient (0-1)">0.693</cnrf_bc_coeff>
-      <cnrf_bc_optcn type="text" description="Optimum cn ratio for bc">25</cnrf_bc_optcn>
-      <bc_wfps_factor type="text" description="Biochar WFPS factor (0-1)">1</bc_wfps_factor>
-      <nh4_adsorption type="text" description="Biochar nh4 absorption coefficient (Langmuir)">0.006</nh4_adsorption>
-      <nh4_desorption type="text" description="Biochar nh4 desorption coefficient (Langmuir)">0.06</nh4_desorption>
-      <category2 type="category" description="Tillage info" />
-      <tillage type="text" description="% BD reduction due to tillage">0.80</tillage>
-      <category3 type="category" description="Soil information" />
-      <soil_name type="modulename" description="Name of the soil as it appears in the simulation tree. This being wrong causes object reference errors.">Loam</soil_name>
       <soil_order type="list" listvalues="Aridisol,Entisol,Gelisol,Inceptisol,Mollisol,Vertisol,Histosol,Alfisol,Oxisol,Spodosol,Ultisol" description="Order of the soil">Mollisol</soil_order>
       <nclay_portion type="text" description="Portion of soil clay that is nclay (0-1)">0.95</nclay_portion>
       <uph type="text" description="Soil upper ph">8.3</uph>
@@ -69,6 +71,7 @@ using CSGeneral;
 public class Script
 {     
    [Link] Paddock MyPaddock; // Can be used to dynamically get access to simulation structure and variables\
+   [Link] Paddock pad; // Can be used to dynamically get access to simulation structure and variables\
    [Input] DateTime Today; // Equates to the value of the current simulation date - value comes from CLOCK   
    [Input] double wf;      // Use the same water factor (SoilN)
    [Input] double[] oc; //Soil OC percent
@@ -119,7 +122,6 @@ public class Script
    [Param] double prim_ef;
    [Param] double prim_fr_fom;
    [Param] double prim_ef_fom;
-   [Param] string soil_name;
    [Param] double soil_cn; //C:N ratio of soil (SoilN)
    [Param] double biom_cn;
    [Param] double incorp_depth;
@@ -178,7 +180,7 @@ public class Script
    private int dayApp;
    private int moApp;
    private int yearApp;
-  
+   private string soil_name="Soil";
    //kb1 = labile pool, kb2 is resistant (decomp rate constants)
    private double kb1, kb2;
    
@@ -217,6 +219,18 @@ public class Script
    // The following event handler will be called once at the beginning of the simulation
    [EventHandler] public void OnInitialised()
    {
+      string[] names;
+      string[] stringSeparators = new string[] {" "};
+      /// Hamze - I'm trying to find the soil name through looping all the childerns of the paddok (Maybe not very efficient but it's working for now)
+      pad = MyPaddock.Parent.ChildPaddocks[0];
+      foreach (Component s in pad.Children)      {
+         if(s.Name.Contains("Water")){
+            names = s.Name.Split(stringSeparators, StringSplitOptions.None);    
+            soil_name = names[0];
+         }
+      }
+      ///////////////////////////////////
+      
       bc_nh4 = new double[oc.Length];
       thisPH = new double[ph.Length];
       soil_cec = new double[oc.Length];
@@ -585,8 +599,7 @@ public class Script
       return calculateActualDecomp(layer, scale_factor[layer], cnr_bcf[layer]);
    }
    
-   //Helper methods for biochar decomposition
-   
+   //Helper methods for biochar decomposition 
    private double calculateCNR_BCF (int layer)
    {
       double cnr_bc; //Biochar cn ratio for decomposition
@@ -669,7 +682,6 @@ public class Script
    //Computes the changes in co2, biom c and humic c due to a change in biochar c
    
    //Step 3 section
-   
    private void computeDLTs(out double dlt_c_biochar_biom, out double dlt_c_biochar_hum, out double dlt_c_biochar_co2, double dlt_c_min_biochar)
    {
       dlt_c_biochar_co2 = dlt_c_min_biochar * (1 - ef_biochar);
@@ -679,10 +691,7 @@ public class Script
       
    }
    
-   
-   
    //Step 4 section 
-   
    private double getNDemand(double dlt_c_biochar_biom, double dlt_c_biochar_hum)
    {
       return (dlt_c_biochar_biom / biom_cn) + (dlt_c_biochar_hum / soil_cn);  // this biochar n demand, n_demand_bc
@@ -719,7 +728,6 @@ public class Script
    }
    
    //Step 7 big work here pretty sure does not matter ppm or kg/ha since both related by constant
-   
    private double get_NH4_changes(int layer)
    {
       if (BiocharC[layer] &gt; 0.0)
