@@ -6,24 +6,21 @@
       <biochar_added type="float" description="amount of biochar applied (kg/ha)">80000</biochar_added>
       <incorp_depth type="text" description="Biochar incorporation depth (mm): ">100</incorp_depth>
       <category6 type="category" description="Biochar properties" />
-      <frac_c_biochar type="float" description="fraction carbon in biochar (0-1)">0.7</frac_c_biochar>
+      <feedbio type="list" listvalues="Manure,Corn,Oak,FoodWaste,Grass,Pine,Polutry,Hazelnut,Other" description="Feedstock class">Corn</feedbio>
+      <PTemp type="text" description="Highest pyrolysis temperature ">450</PTemp>
       <biochar_loss type="float" description="fraction of biochar lost during application (0-1)">0.02</biochar_loss>
       <MRT1 type="float" description="mean residence time for labile biochar pool (years)">1</MRT1>
       <MRT2 type="float" description="mean residence time  for resistant biochar pool (years)">100</MRT2>
-      <frac_labile type="float" description="biochar labile fraction (0-1)">0.2</frac_labile>
       <ef_biochar type="float" description="fraction of decomposed biochar that goes to OC pools (0-1) (biochar efficiency)">0.4</ef_biochar>
       <fr_biochar_biom type="int" description="fraction of decomposed biochar that goes to biom (0-1)">0.05</fr_biochar_biom>
-      <biochar_cn type="int" description="biochar CN ratio">100</biochar_cn>
       <dul_qual type="text" description="Slope of dul quality equation (default 0.33)">0.3</dul_qual>
       <bd_qual type="text" description="Slope of bd quality equation (default 0.33)">0.15</bd_qual>
-      <bc_cce type="text" description="Biochar LV (cmol/kg?)">50</bc_cce>
-      <bc_cec type="text" description="Biochar ECEC (cmol/kg)">187</bc_cec>
       <cnrf_bc_coeff type="text" description="Biochar cnrf coefficient (0-1)">0.69</cnrf_bc_coeff>
       <cnrf_bc_optcn type="text" description="Optimum cn ratio for bc">25</cnrf_bc_optcn>
       <bc_wfps_factor type="text" description="Biochar WFPS factor (0-1)">1</bc_wfps_factor>
       <nh4_adsorption type="text" description="Biochar nh4 absorption coefficient (Langmuir)">0.006</nh4_adsorption>
       <nh4_desorption type="text" description="Biochar nh4 desorption coefficient (Langmuir)">0.06</nh4_desorption>
-      <Categorypriming type="category" description="Priming coefficients" />
+      <Categorypriming type="category" description="Priming effects" />
       <prim_biom type="float" description="priming coefficient for biom pool (-1 to 1) use 0.05">0</prim_biom>
       <prim_hum type="float" description="priming coefficient for hum pool (-1 to 1) use 0.05">0</prim_hum>
       <prim_cell type="float" description="priming coefficient for cell pool (-1 to 1) use 0.08">0</prim_cell>
@@ -90,14 +87,14 @@ public class Script
    double[] tf;      // Use the same temperature factor (SoilN)
   
    [Param] int biochar_added;      // in kg/ha
-   [Param] double frac_c_biochar;  // C in biochar
+   //[Param] double frac_c_biochar;  // C in biochar
    [Param] double biochar_loss;    // usually there is a loss during application that might impact calculations
    [Param] double MRT1;             // mean residence time for the labile biochar pool
    [Param] double MRT2;             // mean residence time for the resistant biochar pool
-   [Param] double frac_labile;     // labile fraction of biochar; this depends on the biochar type - varies from 1 to 30%.
+   //[Param] double frac_labile;     // labile fraction of biochar; this depends on the biochar type - varies from 1 to 30%.
    [Param] double ef_biochar;      // efficiency of biochar retained in the system
    [Param] double fr_biochar_biom; // a small portion goes to BIOM (usually this is zero) and the rest goes to HUM
-   [Param] double biochar_cn;         // CN ratio of the new biochar pool
+   //[Param] double biochar_cn;         // CN ratio of the new biochar pool
    [Param] string date_of_application; //The date biochar was adde
    [Param] double sand; // Sand percent of soil
    [Param] double clay; //Clay percent of soil 
@@ -130,8 +127,8 @@ public class Script
    [Param] double bd_qual;
    [Param] string soil_order;
    [Param] double nclay_portion;
-   [Param] double bc_cce;
-   [Param] double bc_cec;
+   //[Param] double bc_cce;
+   //[Param] double bc_cec;
    [Param] double cnrf_bc_coeff;
    [Param] double cnrf_bc_optcn;
    [Param] double uph;
@@ -139,9 +136,13 @@ public class Script
    [Param] double ab_val;
    [Param] double bot_slope;
    [Param] double bc_wfps_factor;
-   
    [Param] double nh4_adsorption;
    [Param] double nh4_desorption;
+   //------------------------------------Params for GLMs
+   [Param] string feedbio;
+   [Param] double PTemp;
+   
+   
 
    [Output] double[] BiocharC;             // BiocharC = biochar_added * frac_c_biochar * biochar_loss
    [Output] double BiocharC_total;    // Ammount of biochar c in each individual soil layer
@@ -169,18 +170,19 @@ public class Script
    [Output] double[] biochar_bd; //internal virtual bd for soil water
    [Output] double[] dlt_c_min_biochar_pot;
    [Output] double[] total_stress;
-   
-   private double[] init_soil_fac;
-   
-   //Debugging related output variables
+   [Output] double[] soil_cec;
+   [Output] double[] soil_cec_orig;
+   [Output] double wfps_factor;
+      //Debugging related output variables
    //How we communicate with other modules
    [Event] public event BiocharDecomposedDelegate BiocharDecomposed;
    [Event] public event BiocharAppliedDelegate BiocharApplied;
    
+   private double[] init_soil_fac;
    private int dayApp;
    private int moApp;
    private int yearApp;
-   private string soil_name="Soil";
+
    //kb1 = labile pool, kb2 is resistant (decomp rate constants)
    private double kb1, kb2;
    
@@ -190,12 +192,9 @@ public class Script
    private DateTime date;
    //nh4 date
    private DateTime nh4_date;
-   
    //The base titration value calcutated from default soil pH
    private double[] titrat_val;
-   
    private double biochar_ph_value; //10^-(bc_ph)
-   
    private double[] yesterday_oc; //OC from yesterday so we can compute delta
    private double rainAmt;
    private double[] initialBD;
@@ -203,23 +202,23 @@ public class Script
    private double[] MassComparison;
    //Respective mass of each layer, computed using bulk density on day 1
    private double[] LayerMass;
-   
    private bool firstTill;
-   
-   
-   
    private int till_depth_layer;
    private double q_ll;//Quality factors
-   [Output] double[] soil_cec;
-   [Output] double[] soil_cec_orig;
+   private string soil_name="Soil";
+   ///---------------------------------------------------- Hamze ------------- Varibles replace by GLMS
+   private double bc_cce;
+   private double bc_cec;
+   private double biochar_cn; 
+   private double frac_labile; 
+   private double frac_c_biochar;
    
-   [Output] double wfps_factor;
    
-
    // The following event handler will be called once at the beginning of the simulation
    [EventHandler] public void OnInitialised()
    {
       string[] names;
+      double[] estimates;
       string[] stringSeparators = new string[] {" "};
       /// Hamze - I'm trying to find the soil name through looping all the childerns of the paddok (Maybe not very efficient but it's working for now)
       pad = MyPaddock.Parent.ChildPaddocks[0];
@@ -229,6 +228,13 @@ public class Script
             soil_name = names[0];
          }
       }
+      /////////////////////////////////// Using GLM function to estimate the biochar properties
+      estimates=GLMs(feedbio,PTemp);
+      frac_c_biochar = estimates[0];
+      frac_labile=estimates[1];
+      biochar_cn=estimates[2];
+      bc_cec=estimates[3];
+      bc_cce=estimates[4];
       ///////////////////////////////////
       
       bc_nh4 = new double[oc.Length];
@@ -1074,7 +1080,126 @@ public class Script
       double bc_alkaline = MassComparison[layer] * bc_cce;
       return bc_alkaline * (uph - thisPH[layer]) * (thisPH[layer] - lph) * bot_slope / ((uph - lph) * soil_cec[layer]); 
    }
-      
+   
+   
+   // based on the selected feedstock class and biomass I choose the GLM and compute the params
+   /// &lt;summary&gt;
+   /// Estimates the biochar properties given Biomass, Feedstock and Temp
+   /// &lt;/summary&gt;
+   /// &lt;param name="B"&gt;Biomass&lt;/param&gt;
+   /// &lt;param name="T"&gt;Temperature&lt;/param&gt;
+   /// &lt;returns&gt;&lt;/returns&gt;
+   private double[] GLMs(string B, double T){
+      // Coefficients are taken from here:https://veromora.shinyapps.io/BiocharEng/
+      //http://www.sciencedirect.com/science/article/pii/S0960852415002138
+     // first elem is frac_c_biochar, frac_labile, biochar_cn, biochar_cce, bc_cec
+      double[] outputs = new double[5];
+      double c1=0;
+      double c2 = 0;
+      double c3 = 0;
+      double c4 = 0;
+      double c5 = 0;
+      double c6 = 0;
+      double c7 = 0;
+      double c8 = 0;
+      double c9 = 0;
+      switch (B)
+      {
+         case "Corn":
+            c1 = 18.2857;
+            c2 = 0.3642;
+            c3 = 0.0812;
+            c4 = -4.043;
+            c5 = -0.006;
+            c7 = 0.008923;
+            c8 = 0.2268;
+            c9 = -0.0003498;
+            break;
+         case "Manure":
+            c1 = 46.60714;
+            c2 = 0.15786;
+            c3 = 0.085492;
+            c4 = 11.31;
+            c5 = -0.01412;
+            c6 = 0.2675;
+            c7 = 0.008923;
+            c8 = 0.1769;
+            c9 = -0.0004661;
+            break;
+         case "Oak":
+            c1 = -48.44101;
+            c2 = 0.8028;
+            c3 = 0.1166;
+            c4 = -15.23;
+            c5 = 0.001536;
+            c6 = -3.2516;
+            c7 = 0.008923;
+            c8 = 0.2446;
+            c9 = -0.0007776;
+            break;
+         case "FoodWaste":
+            c1 = 599.07143;
+            c2 = -1.42;
+            c3 = 0.01705;
+            c4 = 85.47;
+            c5 = -0.1564;
+            c6 = -0.095;
+            c7 = 0.008923;
+            c8 = 0.0205;
+            c9 = -0.0007561;
+            break;
+         case "Grass":
+            c1 = -131.02857;
+            c2 = 0.928;
+            c3 = 0.1038;
+            c4 = -5.7843;
+            c5 = -0.0024;
+            c6 = -1.433;
+            c7 = 0.008923;
+            c8 = 0;
+            c9 = 0;
+            break;
+         case "Pine":
+            c1 = -127.755;
+            c2 = 0.9179;
+            c3 = 0.1147;
+            c4 = -16.873;
+            c5 = 0.001184;
+            c6 = -3.065;
+            c7 = 0.008923;
+            c8 = 0.0916;
+            c9 = -0.0003826;
+            break;
+         case "Polutry":
+            c1 = -139.3619;
+            c2 = -0.0886;
+            c3 = -0.01538;
+            c4 = 13.543;
+            c5 = -0.03757;
+            c6 = 0.745833;
+            c7 = 0.008923;
+            c8 = 0.3711;
+            c9 = -0.001287;
+            break;
+         case "Hazelnut":
+            c1 = 72.8214;
+            c2 = 0.49929;
+            c3 = 0.09939;
+            c4 = -12.413;
+            c5 = -0.0004286;
+            c6 = -1.2275;
+            c7 = 0.008923;
+            c8 = -0.3006;
+            c9 = -0.000002046;
+            break;
+      }
+      outputs[0] = (483.9285) + (c1) + (c2) * T;
+      outputs[1] = (100-(9.43219+(c3*T)))/100;//because it stimates the fixed carobn
+      outputs[2] =  outputs[1]/(10.77)+(c4)+(c5*T); // C/N
+      outputs[3] = 5.077 + (c6) + (c7 * T);
+      outputs[4] = 1.7 + (c8) + (c9) * T;
+      return(outputs);
+   }
 
 //TODO sand clay gravelw into arrays and gotten from simulation
   
